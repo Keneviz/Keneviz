@@ -393,10 +393,6 @@ def api_proxy(api_name):
             return f"<h3>API isteği başarısız: {e}</h3>", e.response.status_code
     except Exception as e:
         return f"<h3>API isteği başarısız: {e}</h3>", 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)rds:
             return "<h3>❌ Kayıt bulunamadı.</h3>"
 
         # Tabloya verileri hazırla
