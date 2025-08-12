@@ -1,8 +1,8 @@
-flask import Flask, request, Response
+from flask import Flask, request, Response
 import requests
 from tabulate import tabulate  # pip install tabulate
 
-app = Flask(name)
+app = Flask(__name__)
 
 apis = {
         "tc_sorgulama": {
@@ -132,8 +132,7 @@ apis = {
     },
     "leak": {
         "desc": "Leak Sorgulama",
-
-"url": "https://api.kahin.org/kahinapi/leak.php",
+        "url": "https://api.kahin.org/kahinapi/leak.php",
         "params": ["query"]
     },
     "telegram": {
@@ -259,8 +258,7 @@ apis = {
     "ehliyet": {
         "desc": "Ehliyet API",
         "url": "http://api.hexnox.pro/sowixapi/ehlt.php",
-
-"params": ["tc"]
+        "params": ["tc"]
     },
     "hava_durumu": {
         "desc": "Hava Durumu Sorgulama",
@@ -345,6 +343,60 @@ def api_proxy(api_name):
             records = []
 
         if not records:
+            return "<h3>❌ Kayıt bulunamadı.</h3>"
+
+        # Tabloya verileri hazırla
+        table_data = []
+        for person in records:
+            table_data.append([
+                person.get("TC", ""),
+                person.get("ADI", ""),
+                person.get("SOYADI", ""),
+                person.get("ANNEADI", ""),
+                person.get("BABAADI", ""),
+                person.get("DOGUMTARIHI", ""),
+                person.get("NUFUSIL", ""),
+                person.get("NUFUSILCE", ""),
+                person.get("BABATC", ""),
+                person.get("ANNETC", "")
+            ])
+
+        headers = ["TC", "Adı", "Soyadı", "Anne Adı", "Baba Adı", "Doğum Tarihi", "İl", "İlçe", "BabaTC", "AnneTC"]
+
+        # tabulate ile HTML tablo oluştur
+        html_table = tabulate(table_data, headers=headers, tablefmt="html")
+
+        # Basit bir HTML sayfası içinde gönder
+        html_page = f"""
+        <html>
+            <head>
+                <title>{api['desc']}</title>
+                <style>
+                    table {{border-collapse: collapse; width: 100%;}}
+                    th, td {{border: 1px solid #ccc; padding: 8px; text-align: left;}}
+                    th {{background-color: #f2f2f2;}}
+                </style>
+            </head>
+            <body>
+                <h2>{api['desc']}</h2>
+                {html_table}
+            </body>
+        </html>
+        """
+
+        return Response(html_page, mimetype='text/html')
+
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return "<h3>❌ Kayıt bulunamadı.</h3>", 404
+        else:
+            return f"<h3>API isteği başarısız: {e}</h3>", e.response.status_code
+    except Exception as e:
+        return f"<h3>API isteği başarısız: {e}</h3>", 500
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)rds:
             return "<h3>❌ Kayıt bulunamadı.</h3>"
 
         # Tabloya verileri hazırla
