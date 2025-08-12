@@ -392,8 +392,7 @@ def api_proxy(api_name):
         else:
             return f"<h3>API isteği başarısız: {e}</h3>", e.response.status_code
     except Exception as e:
-        return f"<h3>API isteği başarısız: {e}</h3>", 500
-            return "<h3>❌ Kayıt bulunamadı.</h3>"
+        return f"<h3>API isteği başarısız: {e}</h3>", 500            
 
         # Tabloya verileri hazırla
         table_data = []
